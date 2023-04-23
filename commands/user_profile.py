@@ -15,7 +15,7 @@ from utils.errors import InvalidOutputTemplate, InvalidProfile, InvalidCollectio
 @click.command()
 @click.option("-od", "--output-directory", prompt="Output Directory", type=click.Path(exists=True))
 @click.option("-ot", "--output-template", prompt="Output Template", default="Press enter for default")
-@click.option("-ptdl", "--profile-to-download", prompt="Profile to dowonload [URL or Username]")
+@click.option("-ptdl", "--profile-to-download", prompt="Profile to download [URL or Username]")
 @click.option("-gt", "--gfy-type-to-download", prompt="Gfy Type To Download:\n 1) MP4\n 2) WebM\n 3) Larger of the two\n", type=click.Choice(GFY_TYPE))
 @click.option("-s", "--sleep", prompt="Sleep Between Downloads", type=click.INT)
 @click.option("-o", "--overwrite", prompt="Overwrite Existing Gfys (y/n)", type=click.BOOL)
