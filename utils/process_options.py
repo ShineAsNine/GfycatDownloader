@@ -6,6 +6,8 @@ import requests
 import validators
 from utils.errors import InvalidOutputTemplate, InvalidProfile, InvalidCollection, InvalidSingleGfyUrl
 
+requests.packages.urllib3.disable_warnings()
+
 
 class ProcessOptions:
     def __init__(self, output_directory,
@@ -72,11 +74,12 @@ class ProcessOptions:
             url = f"https://gfycat.com/@{self.profile_to_download}"
 
         return self.validate_profile(url)
+        # return f"https://gfycat.com/@{self.profile_to_download}"
 
     def validate_profile(self, url):
-        response = requests.get(url)
-        if response.status_code != 200:
-            raise InvalidProfile
+        # response = requests.get(url, verify=False)
+        # if response.status_code != 200:
+        #     raise InvalidProfile
         return urlparse(url).path[1:].split("/")[0][1:]
 
     def process_collection(self):
@@ -97,7 +100,7 @@ class ProcessOptions:
 
         url = f"https://api.gfycat.com/v1/users/{username}/collections/{collection_id}/gfycats"
 
-        response = requests.get(url)
+        response = requests.get(url, verify=False)
         if response.status_code != 200:
             raise InvalidCollection
 

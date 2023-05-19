@@ -19,6 +19,6 @@ class ExpiredOrInvalidAuthKey(Exception):
 
 
 class InvalidSingleGfyUrl(Exception):
-    def __init__(self, url):
-        self.message = "Auth key is expired or invalid"
+    def __init__(self, url: str):
+        self.message = "Invalid gfy url"
         self.url = url

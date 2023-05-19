@@ -8,6 +8,8 @@ import click
 import requests
 from tqdm import tqdm
 
+requests.packages.urllib3.disable_warnings()
+
 
 class DownloadGfys():
     def __init__(self, download_options, gfys):
@@ -163,7 +165,7 @@ class DownloadGfys():
         else:
             download_url = gfy.get("webmUrl")
 
-        response = requests.get(download_url, stream=True)
+        response = requests.get(download_url, stream=True, verify=False)
         total_size_in_bytes = int(response.headers.get('content-length', 0))
         block_size = 1024
 

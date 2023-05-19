@@ -3,6 +3,7 @@ import textwrap
 from commands import own_profile, user_profile, collection, json_file, links_from_txt
 
 if __name__ == "__main__":
+    print("https://github.com/ShineAsNine/GfycatDownloader\n")
     input_string = "Select a download type:\n 1) Own Profile\n 2) User Profile\n 3) Collection\n 4) JSON File\n 5) Text File\n (1, 2, 3, 4, 5): "
 
     download_type = input(textwrap.dedent(input_string))

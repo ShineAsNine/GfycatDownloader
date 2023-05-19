@@ -1,6 +1,8 @@
 # GfycatDownloader
 
-Download the exe from [releases](https://github.com/ShineAsNine/GfycatDownloader/releases)
+**With version 1.0.1 HTTPS / SSL Certificate verification is disabled making it possible to still download.**
+
+Download from [releases](https://github.com/ShineAsNine/GfycatDownloader/releases)
 <br></br>
 Types of downloads:
 1) Own Profile

@@ -9,10 +9,12 @@ from requests.adapters import Retry, HTTPAdapter
 
 from utils.errors import ExpiredOrInvalidAuthKey
 
+requests.packages.urllib3.disable_warnings()
+
 
 class RequestGfys:
-    def __init__(self, download_options):
 
+    def __init__(self, download_options):
         self.auth_key = download_options.get("auth_key")
         self.profile_to_download = download_options.get("profile_to_download")
         self.collection = download_options.get("collection")
@@ -33,6 +35,7 @@ class RequestGfys:
     def start_request_loop(self):
         try:
             with requests.session() as session:
+                session.verify = False
                 return self.request_loop(session)
         except requests.exceptions.HTTPError as e:
             if str(e).startswith("401"):
