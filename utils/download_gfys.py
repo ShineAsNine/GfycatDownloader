@@ -8,8 +8,6 @@ import click
 import requests
 from tqdm import tqdm
 
-requests.packages.urllib3.disable_warnings()  # type: ignore
-
 
 class DownloadGfys():
     def __init__(self, download_options, gfys):
@@ -115,7 +113,7 @@ class DownloadGfys():
             return collection_directory
         elif self.own_likes is not None:
             headers = {'Authorization': self.own_likes}
-            response = requests.get('https://api.gfycat.com/v1/me/likes', headers=headers, verify=False)
+            response = requests.get('https://api.gfycat.com/v1/me/likes', headers=headers)
             own_likes_directory = f"{response.json()['likes'][0]['username']} - likes"
             os.makedirs(os.path.join(self.output_directory, own_likes_directory), exist_ok=True)
             return own_likes_directory
@@ -181,7 +179,7 @@ class DownloadGfys():
         else:
             download_url = gfy.get("webmUrl")
 
-        response = requests.get(download_url, stream=True, verify=False)
+        response = requests.get(download_url, stream=True)
         total_size_in_bytes = int(response.headers.get('content-length', 0))
         block_size = 1024
 

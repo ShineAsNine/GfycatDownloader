@@ -6,8 +6,6 @@ import requests
 import validators
 from utils.errors import InvalidOutputTemplate, InvalidProfile, InvalidCollection, InvalidSingleGfyUrl
 
-requests.packages.urllib3.disable_warnings()  # type: ignore
-
 
 class ProcessOptions:
     def __init__(self, output_directory,
@@ -86,9 +84,9 @@ class ProcessOptions:
         # return f"https://gfycat.com/@{self.profile_to_download}"
 
     def validate_profile(self, url):
-        # response = requests.get(url, verify=False)
-        # if response.status_code != 200:
-        #     raise InvalidProfile
+        response = requests.get(url)
+        if response.status_code != 200:
+            raise InvalidProfile
         return urlparse(url).path[1:].split("/")[0][1:]
 
     def process_collection(self):
@@ -109,7 +107,7 @@ class ProcessOptions:
 
         url = f"https://api.gfycat.com/v1/users/{username}/collections/{collection_id}/gfycats"
 
-        response = requests.get(url, verify=False)
+        response = requests.get(url)
         if response.status_code != 200:
             raise InvalidCollection
 
@@ -137,7 +135,7 @@ class ProcessOptions:
         headers = {'Authorization': auth_key}
         url = f"https://api.gfycat.com/v1/me/collections/{collection_id}/gfycats"
 
-        response = requests.get(url, headers=headers, verify=False)
+        response = requests.get(url, headers=headers)
         if response.status_code != 200:
             raise InvalidCollection
 
@@ -156,9 +154,9 @@ class ProcessOptions:
         # return f"https://gfycat.com/@{self.profile_to_download}"
 
     def validate_profile_likes(self, url):
-        # response = requests.get(url, verify=False)
-        # if response.status_code != 200:
-        #     raise InvalidProfile
+        response = requests.get(url)
+        if response.status_code != 200:
+            raise InvalidProfile
         return urlparse(url).path[1:].split("/")[0][1:]
 
     def process_json_file(self):

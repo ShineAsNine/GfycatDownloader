@@ -6,8 +6,6 @@ from requests.adapters import Retry, HTTPAdapter
 
 from utils.errors import ExpiredOrInvalidAuthKey
 
-requests.packages.urllib3.disable_warnings()  # type: ignore
-
 
 class AllCollections:
     def __init__(self, auth_key, username):
@@ -16,12 +14,11 @@ class AllCollections:
             self.url = "https://api.gfycat.com/v1/me/collections"
         elif username:
             self.auth_key = None
-            self.url = f"https://api.gfycat.com/v1/users/{username}/collections?count=100"
+            self.url = f"https://api.gfycat.com/v1/users/{username}/collections"
 
     def start_request_loop(self):
         try:
             with requests.session() as session:
-                session.verify = False
                 return self.request_loop(session)
         except requests.exceptions.HTTPError as e:
             if str(e).startswith("401"):

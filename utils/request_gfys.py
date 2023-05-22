@@ -9,8 +9,6 @@ from requests.adapters import Retry, HTTPAdapter
 
 from utils.errors import ExpiredOrInvalidAuthKey
 
-requests.packages.urllib3.disable_warnings()  # type: ignore
-
 
 class RequestGfys:
 
@@ -47,7 +45,6 @@ class RequestGfys:
     def start_request_loop(self):
         try:
             with requests.session() as session:
-                session.verify = False
                 return self.request_loop(session)
         except requests.exceptions.HTTPError as e:
             if str(e).startswith("401"):
@@ -118,7 +115,7 @@ class RequestGfys:
             self.json_name = f"{self.collection_username} - {self.collection_id}"
         elif self.own_likes:
             headers = {'Authorization': self.own_likes}
-            response = requests.get('https://api.gfycat.com/v1/me/likes', headers=headers, verify=False)
+            response = requests.get('https://api.gfycat.com/v1/me/likes', headers=headers)
             self.json_name = f"{response.json()['likes'][0]['username']} - likes"
         elif self.user_likes:
             self.json_name = f"{gfys[0]['username']} - likes"
