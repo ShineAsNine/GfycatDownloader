@@ -9,7 +9,7 @@ from requests.adapters import Retry, HTTPAdapter
 
 from utils.errors import ExpiredOrInvalidAuthKey
 
-requests.packages.urllib3.disable_warnings()
+requests.packages.urllib3.disable_warnings()  # type: ignore
 
 
 class RequestGfys:
@@ -18,6 +18,9 @@ class RequestGfys:
         self.auth_key = download_options.get("auth_key")
         self.profile_to_download = download_options.get("profile_to_download")
         self.collection = download_options.get("collection")
+        self.private_collection = download_options.get("private_collection")
+        self.own_likes = download_options.get("own_likes")
+        self.user_likes = download_options.get("user_likes")
         self.single_gfy = download_options.get("single_gfy")
         self.sleep_time = download_options.get("sleep_time")
 
@@ -29,6 +32,15 @@ class RequestGfys:
             self.collection_username = self.collection[0]
             self.collection_id = self.collection[1]
             self.url = f"https://api.gfycat.com/v1/users/{self.collection_username}/collections/{self.collection_id}/gfycats"
+        elif self.private_collection is not None:
+            self.collection_username = self.private_collection[0]
+            self.collection_id = self.private_collection[1]
+            self.collection_auth_key = self.private_collection[2]
+            self.url = f"https://api.gfycat.com/v1/me/collections/{self.collection_id}/gfycats"
+        elif self.own_likes is not None:
+            self.url = "https://api.gfycat.com/v1/me/likes/populated"
+        elif self.user_likes is not None:
+            self.url = f"https://api.gfycat.com/v1/users/{self.user_likes}/likes/populated"
         elif self.single_gfy is not None:
             self.url = f"https://api.gfycat.com/v1/gfycats/{self.single_gfy}"
 
@@ -54,7 +66,15 @@ class RequestGfys:
         gfys = []
         total_gfys = 0
 
-        headers = {'Authorization': self.auth_key} if self.auth_key else None
+        if self.auth_key:
+            headers = {'Authorization': self.auth_key}
+        elif self.own_likes:
+            headers = {'Authorization': self.own_likes}
+        elif self.private_collection:
+            headers = {'Authorization': self.collection_auth_key}
+        else:
+            headers = None
+
         params = {"count": "100"}
 
         while True:
@@ -94,8 +114,14 @@ class RequestGfys:
         current_date = datetime.now().strftime("%y%m%d")
         if self.auth_key or self.profile_to_download:
             self.json_name = gfys[0]['username']
-        elif self.collection:
+        elif self.collection or self.private_collection:
             self.json_name = f"{self.collection_username} - {self.collection_id}"
+        elif self.own_likes:
+            headers = {'Authorization': self.own_likes}
+            response = requests.get('https://api.gfycat.com/v1/me/likes', headers=headers, verify=False)
+            self.json_name = f"{response.json()['likes'][0]['username']} - likes"
+        elif self.user_likes:
+            self.json_name = f"{gfys[0]['username']} - likes"
 
         with open(f"./{current_date} {self.json_name}.json", "w", encoding="utf-8") as f:
             json.dump(gfys, f, indent=4)

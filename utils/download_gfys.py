@@ -8,7 +8,7 @@ import click
 import requests
 from tqdm import tqdm
 
-requests.packages.urllib3.disable_warnings()
+requests.packages.urllib3.disable_warnings()  # type: ignore
 
 
 class DownloadGfys():
@@ -18,6 +18,9 @@ class DownloadGfys():
         self.auth_key = download_options.get("auth_key")
         self.profile_to_download = download_options.get("profile_to_download")
         self.collection = download_options.get("collection")
+        self.private_collection = download_options.get("private_collection")
+        self.own_likes = download_options.get("own_likes")
+        self.user_likes = download_options.get("user_likes")
         self.json_file = download_options.get("json_file")
         self.single_gfys = download_options.get("single_gfy")
         self.gfys = self.json_file if self.json_file is not None else gfys
@@ -93,20 +96,33 @@ class DownloadGfys():
             click.echo(traceback.format_exc())
 
     def create_directory(self):
-        if self.auth_key is not None or self.profile_to_download is not None:
+        if self.auth_key or self.profile_to_download:
             self.url = "https://api.gfycat.com/v1/me/gfycats"
             username = self.gfys[0].get("username")
-            os.makedirs(os.path.join(
-                self.output_directory, username), exist_ok=True)
+            os.makedirs(os.path.join(self.output_directory, username), exist_ok=True)
             return username
-
-        elif self.collection is not None:
+        elif self.collection:
             collection_username = self.collection[0]
             collection_id = self.collection[1]
             collection_directory = f"{collection_username} - {collection_id}"
             os.makedirs(os.path.join(self.output_directory, collection_directory), exist_ok=True)
             return collection_directory
-
+        elif self.private_collection:
+            collection_username = self.private_collection[0]
+            collection_id = self.private_collection[1]
+            collection_directory = f"{collection_username} - {collection_id}"
+            os.makedirs(os.path.join(self.output_directory, collection_directory), exist_ok=True)
+            return collection_directory
+        elif self.own_likes is not None:
+            headers = {'Authorization': self.own_likes}
+            response = requests.get('https://api.gfycat.com/v1/me/likes', headers=headers, verify=False)
+            own_likes_directory = f"{response.json()['likes'][0]['username']} - likes"
+            os.makedirs(os.path.join(self.output_directory, own_likes_directory), exist_ok=True)
+            return own_likes_directory
+        elif self.user_likes is not None:
+            username_likes = f"{self.gfys[0].get('username')} - likes"
+            os.makedirs(os.path.join(self.output_directory, username_likes), exist_ok=True)
+            return username_likes
         elif self.json_file is not None:
             return None
 

@@ -9,17 +9,17 @@ from utils.download_gfys import DownloadGfys
 from utils.process_options import ProcessOptions
 from utils.request_gfys import RequestGfys
 
-from utils.errors import InvalidOutputTemplate, ExpiredOrInvalidAuthKey
+from utils.errors import InvalidOutputTemplate, InvalidProfile, InvalidCollection
 
 
 @click.command()
 @click.option("-od", "--output-directory", prompt="Output Directory", type=click.Path(exists=True))
 @click.option("-ot", "--output-template", prompt="Output Template", default="Press enter for default")
-@click.option("-c", "--collection", prompt="Collection URL")
+@click.option("-pltdl", "--profile-likes-to-download", prompt="Profile likes to download [URL or Username]")
 @click.option("-gt", "--gfy-type-to-download", prompt="Gfy Type To Download:\n 1) MP4\n 2) WebM\n 3) Larger of the two\n", type=click.Choice(GFY_TYPE))
 @click.option("-s", "--sleep", prompt="Sleep Between Downloads", type=click.INT)
 @click.option("-o", "--overwrite", prompt="Overwrite Existing Gfys (y/n)", type=click.BOOL)
-def collection(output_directory, output_template, collection, gfy_type_to_download, sleep, overwrite):
+def user_likes(output_directory, output_template, profile_likes_to_download, gfy_type_to_download, sleep, overwrite):
 
     try:
         download_options = ProcessOptions(
@@ -27,10 +27,10 @@ def collection(output_directory, output_template, collection, gfy_type_to_downlo
             output_template=output_template,
             auth_key=None,
             profile_to_download=None,
-            collection=collection,
+            collection=None,
             private_collection=None,
             own_likes=None,
-            user_likes=None,
+            user_likes=profile_likes_to_download,
             json_file=None,
             single_gfy=None,
             gfy_type_to_download=int(gfy_type_to_download),
@@ -49,7 +49,7 @@ def collection(output_directory, output_template, collection, gfy_type_to_downlo
         os.system("pause")
         sys.exit()
 
-    except (InvalidOutputTemplate, ExpiredOrInvalidAuthKey) as e:
+    except (InvalidOutputTemplate, InvalidProfile, InvalidCollection) as e:
         click.echo(e.message)
         os.system("pause")
         sys.exit()
